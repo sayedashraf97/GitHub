@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Github Issues Viewer</title>
+</head>
+<body>
+  <h1>Github Issues Viewer</h1>
+  <h2 id="page-number"></h2>
+  <ul id="issue-list"></ul>
+  <button id="load-prev">Load Previous</button>
+  <button id="load-next">Load Next</button>
+  
+  <script>
+    const apiUrl = 'https://api.github.com/repositories/1296269/issues';
+    let currentPage = 1;
+
+    function fetchIssues(pageNumber) {
+      const url = `${apiUrl}?page=${pageNumber}&per_page=5`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const issues = data.map(issue => issue.title);
+          displayIssues(issues);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+
+    function displayIssues(issues) {
+      const issueList = document.getElementById('issue-list');
+      issueList.innerHTML = '';
+
+      for (const issue of issues) {
+        const li = document.createElement('li');
+        li.textContent = issue;
+        issueList.appendChild(li);
+      }
+    }
+
+    function loadNextPage() {
+      currentPage++;
+      document.getElementById('page-number').textContent = `Page number ${currentPage}`;
+      fetchIssues(currentPage);
+    }
+
+    function loadPreviousPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        document.getElementById('page-number').textContent = `Page number ${currentPage}`;
+        fetchIssues(currentPage);
+      }
+    }
+
+    document.getElementById('load-next').addEventListener('click', loadNextPage);
+    document.getElementById('load-prev').addEventListener('click', loadPreviousPage);
+
+    document.getElementById('page-number').textContent = `Page number ${currentPage}`;
+    fetchIssues(currentPage);
+  </script>
+</body>
+</html>
