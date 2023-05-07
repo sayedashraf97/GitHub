@@ -4,34 +4,47 @@
   <title>Github Issues Viewer</title>
 </head>
 <body>
+  <!-- The page title and heading for the issue list and page number -->
   <h1>Github Issues Viewer</h1>
   <h2 id="page-number"></h2>
+
+  <!-- The issue list and buttons to load the next and previous pages of issues -->
   <ul id="issue-list"></ul>
   <button id="load-prev">Load Previous</button>
   <button id="load-next">Load Next</button>
-  
+
   <script>
+    // The URL for the Github API and the current page number
     const apiUrl = 'https://api.github.com/repositories/1296269/issues';
     let currentPage = 1;
 
+    // Function to fetch issues from the Github API
     function fetchIssues(pageNumber) {
+      // Construct the URL for the API request with the specified page number
       const url = `${apiUrl}?page=${pageNumber}&per_page=5`;
 
+      // Use the Fetch API to fetch the issues from the API
       fetch(url)
         .then(response => response.json())
         .then(data => {
+          // Extract the issue titles from the response data and display them
           const issues = data.map(issue => issue.title);
           displayIssues(issues);
         })
         .catch(error => {
+          // Log any errors to the console
           console.error(error);
         });
     }
 
+    // Function to display the issue titles in the HTML
     function displayIssues(issues) {
+      // Get the unordered list element from the HTML
       const issueList = document.getElementById('issue-list');
+      // Clear any existing issues from the list
       issueList.innerHTML = '';
 
+      // Loop over the issue titles and create a new list item for each one
       for (const issue of issues) {
         const li = document.createElement('li');
         li.textContent = issue;
@@ -39,23 +52,32 @@
       }
     }
 
+    // Function to load the next page of issues
     function loadNextPage() {
+      // Increment the current page number and update the page number heading in the HTML
       currentPage++;
       document.getElementById('page-number').textContent = `Page number ${currentPage}`;
+      // Fetch and display the issues for the new page number
       fetchIssues(currentPage);
     }
 
+    // Function to load the previous page of issues
     function loadPreviousPage() {
+      // Check if the current page number is greater than 1
       if (currentPage > 1) {
+        // Decrement the current page number and update the page number heading in the HTML
         currentPage--;
         document.getElementById('page-number').textContent = `Page number ${currentPage}`;
+        // Fetch and display the issues for the new page number
         fetchIssues(currentPage);
       }
     }
 
+    // Add event listeners to the "Load Next" and "Load Previous" buttons
     document.getElementById('load-next').addEventListener('click', loadNextPage);
     document.getElementById('load-prev').addEventListener('click', loadPreviousPage);
 
+    // Display the initial page number in the page number heading and fetch the initial page of issues
     document.getElementById('page-number').textContent = `Page number ${currentPage}`;
     fetchIssues(currentPage);
   </script>
